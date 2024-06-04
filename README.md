@@ -9,16 +9,16 @@ https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/a1935642-56bf-4cd0-
 # Example code
 Let's write this UEC Basic program on your REPL.
 ```basic
-00 PRINTLN "Guess Game"
+00 PRINT "Guess Game"
 10 RAND SEED
 20 LET SEED = round(SEED * 100)
 30 PRINT "Please guess seed value: "
 40 INPUT GUESS
 50 IF int(GUESS) < SEED THEN 60 ELSE 80
-60 PRINTLN "Too small!"
+60 PRINT "Too small!"
 70 GOTO 30
 80 IF int(GUESS) > SEED THEN 90 ELSE 110
-90 PRINTLN "Too big!"
+90 PRINT "Too big!"
 100 GOTO 30
-110 PRINTLN "Great!"
+110 PRINT "Great!"
 ```
