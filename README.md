@@ -2,7 +2,7 @@
 The simple and classical Basic interpreter from UEC.<br>
 Because I'm student of UEC programming class, I named this interpreter "UEC Basic".
 
-![image](https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/48772166-ddbd-459c-a6a8-a311de90e0db)
+https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/3ac6d815-6142-4009-b6a4-0ec9719a8dbf
 
 # Example code
 Let's write this UEC Basic program on your REPL.
