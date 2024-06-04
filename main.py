@@ -7,7 +7,7 @@ class UecBasic:
         lines: list[str] = code.split("\n")
         for line in lines:
             tokens: list[str] = line.split(" ")
-            self.code[tokens[0].strip()] = " ".join(tokens[1:])
+            self.code[int(tokens[0].strip())] = " ".join(tokens[1:])
 
     def run(self, code: str):
         self.parse(code)
@@ -29,7 +29,7 @@ class UecBasic:
                 print(eval(line.replace("print", "", 1)))
             elif "goto" in line:
                 pc = line.replace("goto", "", 1).strip()
-                line = self.code[pc].lower()
+                line = self.code[int(pc)].lower()
                 is_goto = True
                 continue
             elif "exit" in line:
@@ -40,15 +40,21 @@ class UecBasic:
 def console():
     print("UEC Basic")
     print("(c) 2024 Kajizuka Taichi. All rights reserved")
-    print("It's not UEC's official one, Built by student of UEC programming class")
+    print("Create by student of UEC programming class")
 
     interpreter = UecBasic()
     code: list = []
     while True: 
         inputed = input(">>> ")
         if inputed == "RUN":
-            interpreter.run("\n".join(code))
-            code = []
+            try:
+                interpreter.run("\n".join(code))
+            except Exception as e:
+                print(f"ERRPR: {e}")
+            else:
+                print("OK")
+            finally:
+                code = []
         else:
             code.append(inputed)
 
