@@ -2,7 +2,7 @@
 The simple and classical Basic interpreter from UEC.<br>
 Because I'm student of UEC programming class, I named this interpreter "UEC Basic".
 
-![image](https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/f5e3a10d-6a99-479d-9e4a-fa57141bf8ef)
+![image](https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/48772166-ddbd-459c-a6a8-a311de90e0db)
 
 ```basic
 00 PRINTLN "Guess Game"
