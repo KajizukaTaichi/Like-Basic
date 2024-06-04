@@ -3,13 +3,20 @@ import time
 import pyfiglet
 import os
 import random
+import math
+import datetime
 
 class UecBasic:
     """Interpreter of UEC Basic"""
     def __init__(self):
         self.code = {}  # Stores the parsed code with line numbers as keys
-        self.vars = {}  # Stores variables and their values
-
+        # Stores variables and their values
+        self.vars = {
+            "math": math, 
+            "datetime": datetime, 
+            "os": os
+        }
+        
     def parse(self, code: str):
         self.code = {}
         lines = code.split("\n")  # Split the input code into lines
@@ -29,7 +36,7 @@ class UecBasic:
     def run(self, code: str):
         self.parse(code)  # Parse the input code
         sequence = sorted(self.code.keys())  # Sort line numbers
-        index = -1
+        index = -1 # Index of sequence line
         while_stack = []  # Stack to handle WHILE loops
 
         while True:
@@ -39,22 +46,23 @@ class UecBasic:
             pc = sequence[index]
             line = self.code[pc]
 
-            if line.upper().startswith("PRINTLN"):
-                to_print = line[len("PRINTLN"):].strip()
-                print(self.eval_expr(to_print))  # Print with newline
+        
+            # Standards outout
+            if line.upper().startswith("PRINT"):
+                to_print = line[len("PRINT"):].strip() # Print
+                print("".join(list(map(lambda x: str(self.eval_expr(x)), to_print.split(",")))))
 
-            elif line.upper().startswith("PRINT"):
-                to_print = line[len("PRINT"):].strip()
-                print(self.eval_expr(to_print), end="")  # Print without newline
-
+            # Random value
             elif line.upper().startswith("RAND"):
                 variable = line[len("RAND"):].strip()
                 self.vars[variable] = random.random()  # Generate a random number
 
+            # Input
             elif line.upper().startswith("INPUT"):
                 variable = line[len("INPUT"):].strip()
                 self.vars[variable] = input()  # Read input from user
 
+            # Goto Statement
             elif line.upper().startswith("GOTO"):
                 target = line[len("GOTO"):].strip()
                 if target.isdigit():
@@ -66,15 +74,17 @@ class UecBasic:
                 else:
                     raise ValueError(f"Invalid GOTO target: {target}")
 
+            # Define variable
             elif line.upper().startswith("LET"):
                 var_assignment = line[len("LET"):].strip()
                 var_name, expr = var_assignment.split("=", 1)
                 var_name = var_name.strip()
                 self.vars[var_name] = self.eval_expr(expr.strip())  # Assign value to variable
 
+            # IF statement 
             elif line.upper().startswith("IF"):
                 condition, _, rest = line[len("IF"):].partition("THEN")
-                if "ELSE" in rest:
+                if "ELSE" in rest: # Check it there ELSE section
                     true, _, false = rest.partition("ELSE")
                     if self.eval_expr(condition.strip()):
                         target_line = int(true.strip())
@@ -96,6 +106,7 @@ class UecBasic:
                         else:
                             raise ValueError(f"Line number {target_line} does not exist")
 
+            # WHILE statement
             elif line.upper().startswith("WHILE"):
                 condition = line[len("WHILE"):].strip()
                 if self.eval_expr(condition):
@@ -110,6 +121,7 @@ class UecBasic:
                         if line.upper().startswith("LOOP"):
                             break  # Exit WHILE loop
 
+            # End of the loop
             elif line.upper().startswith("LOOP"):
                 if while_stack:
                     start_pc, condition = while_stack[-1]
@@ -118,6 +130,7 @@ class UecBasic:
                     else:
                         while_stack.pop()  # Pop from stack
 
+            # Exit running
             elif line.upper().startswith("EXIT"):
                 return  # Exit the interpreter
             else:
@@ -158,9 +171,7 @@ def print_text_at_position(text, start_col):
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')  # Clear the screen
 
-def anime():
-    time.sleep(1)
-    text = "UEC Basic"
+def anime(text):
     delay = 0.0005  # Initial delay
     final_delay = 2  # Delay after animation
 
@@ -193,14 +204,38 @@ def repl():
             except Exception as e:
                 print(f"{bcolors.FAIL}Error: {e}{bcolors.ENDC}")
             else:
-                print(f"{bcolors.OKGREEN}Ok{bcolors.ENDC}")
-            finally:
-                code = []  # Clear the code after running
+                print(f"{bcolors.OKGREEN}Okay{bcolors.ENDC}")
+        
+        # Clear the code after running
+        elif inputed.upper() == "CLEAR":
+            code = []
+
+        # Save at the file
+        elif inputed.upper() == "SAVE":
+            try:
+                with open(input("File name: "), "w", encoding="utf-8") as f:
+                    f.write("\n".join(code))
+                    print("Saved!")
+            except:
+                print("Fault save")
+        
+        # Load from script file
+        elif inputed.upper() == "LOAD":
+            try:
+                with open(input("File name: "), "r", encoding="utf-8") as f:
+                    code = f.read().split("\n")
+                    print("Loaded!")
+            except:
+                print("Not found")
+        
+        # Exit REPL
+        elif inputed.upper() == "EXIT":
+            exit(0)
         else:
             code.append(inputed)  # Add input to code
 
 if __name__ == "__main__":
-    anime() # Show logo anime
+    anime("UEC Basic") # Show logo anime
 
     clear_console()
     print(f"{bcolors.BOLD}{bcolors.OKBLUE}UEC Basic{bcolors.ENDC}{bcolors.ENDC}")
