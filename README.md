@@ -1,5 +1,4 @@
 # UEC-Basic
 The simple and classical Basic interpreter 
-|Demo image|
-|-|
-|![image](https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/e0180195-fb9f-42b3-a449-42f390faae09)|
+
+![image](https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/f5e3a10d-6a99-479d-9e4a-fa57141bf8ef)
