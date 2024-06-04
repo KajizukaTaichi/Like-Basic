@@ -21,38 +21,62 @@ class UecBasic:
         self.parse(code)
         sequence = sorted(self.code.keys())
         index = -1
-        is_goto = False
+        while_stack = []
 
         while True:
-            if not is_goto:
-                index += 1
-                if index >= len(sequence):
-                    return
-                pc = sequence[index]
-                line = self.code[pc].lower()
+            index += 1
+            if index >= len(sequence):
+                return
+            pc = sequence[index]
+            line = self.code[pc]
 
-            is_goto = False
-
-            if line.startswith("print"):
-                to_print = line[len("print"):].strip()
+            if line.upper().startswith("PRINT"):
+                to_print = line[len("PRINT"):].strip()
                 print(self.eval_expr(to_print))
-            elif line.startswith("goto"):
-                target = line[len("goto"):].strip()
+            elif line.upper().startswith("GOTO"):
+                target = line[len("GOTO"):].strip()
                 if target.isdigit():
                     pc = int(target)
                     if pc in self.code:
                         index = sequence.index(pc) - 1
-                        is_goto = True
                     else:
                         raise ValueError(f"Line number {pc} does not exist")
                 else:
                     raise ValueError(f"Invalid GOTO target: {target}")
-            elif line.startswith("let"):
-                var_assignment = line[len("let"):].strip()
+            elif line.upper().startswith("LET"):
+                var_assignment = line[len("LET"):].strip()
                 var_name, expr = var_assignment.split("=", 1)
                 var_name = var_name.strip()
                 self.vars[var_name] = self.eval_expr(expr.strip())
-            elif line.startswith("exit"):
+            elif line.upper().startswith("IF"):
+                condition, _, rest = line[len("IF"):].partition("GOTO")
+                if self.eval_expr(condition.strip()):
+                    target_line = int(rest.strip())
+                    if target_line in self.code:
+                        index = sequence.index(target_line) - 1
+                    else:
+                        raise ValueError(f"Line number {target_line} does not exist")
+            elif line.upper().startswith("WHILE"):
+                condition = line[len("WHILE"):].strip()
+                if self.eval_expr(condition):
+                    while_stack.append((pc, condition))
+                else:
+                    while True:
+                        index += 1
+                        if index >= len(sequence):
+                            return
+                        pc = sequence[index]
+                        line = self.code[pc]
+                        if line.upper().startswith("LOOP"):
+                            break
+            elif line.upper().startswith("LOOP"):
+                if while_stack:
+                    start_pc, condition = while_stack[-1]
+                    if self.eval_expr(condition):
+                        index = sequence.index(start_pc) - 1
+                    else:
+                        while_stack.pop()
+            elif line.upper().startswith("EXIT"):
                 return
             else:
                 raise SyntaxError(f"Unknown command: {line}")
@@ -70,9 +94,9 @@ def console():
             try:
                 interpreter.run("\n".join(code))
             except Exception as e:
-                print(f"ERROR: {e}")
+                print(f"Error: {e}")
             else:
-                print("OK")
+                print("Ok")
             finally:
                 code = []
         else:
