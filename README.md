@@ -4,6 +4,8 @@ Because I'm student of UEC programming class, I named this interpreter "UEC Basi
 
 ![image](https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/48772166-ddbd-459c-a6a8-a311de90e0db)
 
+# Example code
+Let's write this UEC Basic program on your REPL.
 ```basic
 00 PRINTLN "Guess Game"
 10 RAND SEED
