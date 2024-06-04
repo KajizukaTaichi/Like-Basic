@@ -209,6 +209,7 @@ def repl():
         # Clear the code after running
         elif inputed.upper() == "CLEAR":
             code = []
+            print("Code is cleared!")
 
         # Save at the file
         elif inputed.upper() == "SAVE":
