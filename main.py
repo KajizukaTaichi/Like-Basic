@@ -217,10 +217,14 @@ def repl():
             except:
                 print("Invalid line number")
 
-        # Clear the code after running
+        # Clear the code
         elif inputed.upper() == "CLEAR":
             code = []
             print("Code is cleared")
+
+        # SHow the code
+        elif inputed.upper() == "CODE":
+            print("\n".join(code))
 
         # Save at the file
         elif inputed.upper() == "SAVE":
