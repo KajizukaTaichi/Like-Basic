@@ -199,7 +199,7 @@ def repl():
     while True:
         inputed = input("> ").strip()
 
-        if inputed.split(" ")[0].isdigit():
+        if len(inputed.split(" ")) > 1 and inputed.split(" ")[0].isdigit():
             code.append(inputed)  # Add input to code
         elif inputed.upper() == "RUN":
             try:
@@ -209,17 +209,25 @@ def repl():
             else:
                 print(f"{bcolors.OKGREEN}Okay{bcolors.ENDC}")
         
+        elif inputed.upper().startswith("DEL"):
+            try:
+                line = int(inputed[len("DEL"):].strip())
+                code = [item for item in code if not (item.split(" ")[0] == str(line))]
+                print(f"Line {line} is deleted")
+            except:
+                print("Invalid line number")
+
         # Clear the code after running
         elif inputed.upper() == "CLEAR":
             code = []
-            print("Code is cleared!")
+            print("Code is cleared")
 
         # Save at the file
         elif inputed.upper() == "SAVE":
             try:
                 with open(input("File name: "), "w", encoding="utf-8") as f:
                     f.write("\n".join(code))
-                    print("Saved!")
+                    print("Saved")
             except:
                 print("Fault save")
         
@@ -228,7 +236,7 @@ def repl():
             try:
                 with open(input("File name: "), "r", encoding="utf-8") as f:
                     code = f.read().split("\n")
-                    print("Loaded!")
+                    print("Loaded")
             except:
                 print("Not found")
         
