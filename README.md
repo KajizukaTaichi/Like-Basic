@@ -1,9 +1,9 @@
 # UEC Basic
-The simple and classical Basic interpreter from UEC.<br>
+The simple and user-friendly Basic interpreter from UEC.<br>
 Because I'm student of UEC programming class, I named this interpreter "UEC Basic".
 
 
-https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/a1935642-56bf-4cd0-8317-493261f26037
+https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/5e5639e0-2016-4baf-95cd-673318c53bae
 
 
 # Example code
