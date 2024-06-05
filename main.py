@@ -224,7 +224,7 @@ def repl():
 
         # Show the code
         elif inputed.upper() == "CODE":
-            print("\n".join(code))
+            print("\n".join([f"{key} {value}" for key, value in sorted(interpreter.code.items())]))
 
         # Save at the file
         elif inputed.upper() == "SAVE":
@@ -255,6 +255,8 @@ def repl():
             else:
                 print(f"{bcolors.OKGREEN}Okay{bcolors.ENDC}")
         
+        interpreter.parse("\n".join(code))
+
 if __name__ == "__main__":
     anime("UEC Basic") # Show logo anime
 
