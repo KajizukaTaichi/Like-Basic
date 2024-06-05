@@ -222,7 +222,7 @@ def repl():
             code = []
             print("Code is cleared")
 
-        # SHow the code
+        # Show the code
         elif inputed.upper() == "CODE":
             print("\n".join(code))
 
