@@ -197,12 +197,15 @@ def repl():
     interpreter = UecBasic()
     code = []
     while True:
-        inputed = input("> ")
-        if inputed.upper() == "RUN":
+        inputed = input("> ").strip()
+
+        if inputed.split(" ")[0].isdigit():
+            code.append(inputed)  # Add input to code
+        elif inputed.upper() == "RUN":
             try:
                 interpreter.run("\n".join(code))  # Run the accumulated code
             except Exception as e:
-                print(f"{bcolors.FAIL}Error: {e}{bcolors.ENDC}")
+                print(f"{bcolors.FAIL}Error{bcolors.ENDC}: {e}")
             else:
                 print(f"{bcolors.OKGREEN}Okay{bcolors.ENDC}")
         
@@ -232,9 +235,14 @@ def repl():
         # Exit REPL
         elif inputed.upper() == "EXIT":
             exit(0)
-        else:
-            code.append(inputed)  # Add input to code
-
+        elif inputed != "":
+            try:
+                interpreter.run(f"10 {inputed}")  # Run the accumulated code
+            except Exception as e:
+                print(f"{bcolors.FAIL}Error{bcolors.ENDC}: {e}")
+            else:
+                print(f"{bcolors.OKGREEN}Okay{bcolors.ENDC}")
+        
 if __name__ == "__main__":
     anime("UEC Basic") # Show logo anime
 
