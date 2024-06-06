@@ -168,8 +168,8 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')  # Clear the screen
 
 def anime(text):
-    delay = 0.0005  # Initial delay
-    final_delay = 2  # Delay after animation
+    delay = 0.002  # Initial delay
+    final_delay = 3  # Delay after animation
 
     ascii_art = pyfiglet.figlet_format(text)  # Generate ASCII art
     ascii_art_width = max(len(line) for line in ascii_art.split('\n'))
@@ -179,7 +179,9 @@ def anime(text):
 
     while start_col > (terminal_width - ascii_art_width) // 2:
         clear_screen()
-        delay += terminal_width / 40000  # Increase delay
+        if start_col < (terminal_width / 2.4):
+            delay += terminal_width / 10000 # Increase delay
+        
         print_text_at_position(ascii_art, start_col)
         start_col -= 1
         time.sleep(delay)
