@@ -50,7 +50,7 @@ class UecBasic:
             # Standards outout
             if line.upper().startswith("PRINT"):
                 to_print = line[len("PRINT"):].strip() # Print
-                print("".join(list(map(lambda x: str(self.eval_expr(x)), to_print.split(",")))))
+                print("".join(list(map(lambda x: str(self.eval_expr(x)), to_print.split(";")))), end="")
 
             # Random value
             elif line.upper().startswith("RAND"):
