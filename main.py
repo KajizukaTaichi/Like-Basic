@@ -31,7 +31,7 @@ class UecBasic:
             # Evaluate expressions using the stored variables
             return eval(expr, {}, self.vars)
         except Exception as e:
-            raise SyntaxError(f"Invalid expression: {expr}") from e
+            raise SyntaxError(f"Invalid expression \"{expr}\"") from e
 
     def run(self, code: str):
         self.parse(code)  # Parse the input code
@@ -43,8 +43,8 @@ class UecBasic:
             index += 1
             if index >= len(sequence):
                 return  # Exit if all lines are executed
-            pc = sequence[index]
-            line = self.code[pc]
+            self.pc = sequence[index]
+            line = self.code[self.pc]
 
         
             # Standards outout
@@ -64,15 +64,11 @@ class UecBasic:
 
             # Goto Statement
             elif line.upper().startswith("GOTO"):
-                target = line[len("GOTO"):].strip()
-                if target.isdigit():
-                    pc = int(target)
-                    if pc in self.code:
-                        index = sequence.index(pc) - 1  # Jump to the target line
-                    else:
-                        raise ValueError(f"Line number {pc} does not exist")
+                target = self.eval_expr(line[len("GOTO"):].strip())
+                if target in self.code:
+                    index = sequence.index(target) - 1
                 else:
-                    raise ValueError(f"Invalid GOTO target: {target}")
+                    raise ValueError(f"Line number {target} does not exist")
 
             # Define variable
             elif line.upper().startswith("LET"):
@@ -87,20 +83,20 @@ class UecBasic:
                 if "ELSE" in rest: # Check it there ELSE section
                     true, _, false = rest.partition("ELSE")
                     if self.eval_expr(condition.strip()):
-                        target_line = int(true.strip())
+                        target_line = int(self.eval_expr(true.strip()))
                         if target_line in self.code:
                             index = sequence.index(target_line) - 1
                         else:
                             raise ValueError(f"Line number {target_line} does not exist")
                     else:
-                        target_line = int(false.strip())
+                        target_line = int(self.eval_expr(false.strip()))
                         if target_line in self.code:
                             index = sequence.index(target_line) - 1
                         else:
                             raise ValueError(f"Line number {target_line} does not exist")
                 else:
                     if self.eval_expr(condition.strip()):
-                        target_line = int(rest.strip())
+                        target_line = int(self.eval_expr(rest.strip()))
                         if target_line in self.code:
                             index = sequence.index(target_line) - 1
                         else:
@@ -110,14 +106,14 @@ class UecBasic:
             elif line.upper().startswith("WHILE"):
                 condition = line[len("WHILE"):].strip()
                 if self.eval_expr(condition):
-                    while_stack.append((pc, condition))  # Push to stack
+                    while_stack.append((self.pc, condition))  # Push to stack
                 else:
                     while True:
                         index += 1
                         if index >= len(sequence):
                             return
-                        pc = sequence[index]
-                        line = self.code[pc]
+                        self.pc = sequence[index]
+                        line = self.code[self.pc]
                         if line.upper().startswith("LOOP"):
                             break  # Exit WHILE loop
 
@@ -134,7 +130,7 @@ class UecBasic:
             elif line.upper().startswith("EXIT"):
                 return  # Exit the interpreter
             else:
-                raise SyntaxError(f"Unknown command: {line}")
+                raise SyntaxError(f"Unknown command \"{line}\"")
 
 class bcolors:
     # ANSI escape codes for terminal text colors and styles
@@ -205,7 +201,7 @@ def repl():
             try:
                 interpreter.run("\n".join(code))  # Run the accumulated code
             except Exception as e:
-                print(f"{bcolors.FAIL}Error{bcolors.ENDC}: {e}")
+                print(f"{bcolors.FAIL}Error{bcolors.ENDC} at line {interpreter.pc}: {e}")
             else:
                 print(f"{bcolors.OKGREEN}Okay{bcolors.ENDC}")
         
