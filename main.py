@@ -6,8 +6,8 @@ import random
 import math
 import datetime
 
-class UecBasic:
-    """Interpreter of UEC Basic"""
+class LikeBasic:
+    """Interpreter of Like Basic"""
     def __init__(self):
         self.code = {}  # Stores the parsed code with line numbers as keys
         # Stores variables and their values
@@ -192,7 +192,7 @@ def anime(text):
     input(" " * ((terminal_width // 2) - (ascii_art_width // 4)) + "Enter to start REPL")
 
 def repl():
-    interpreter = UecBasic()
+    interpreter = LikeBasic()
     code = []
     while True:
         inputed = input("> ").strip()
@@ -256,12 +256,11 @@ def repl():
         interpreter.parse("\n".join(code))
 
 if __name__ == "__main__":
-    anime("UEC Basic") # Show logo anime
+    anime("Like Basic") # Show logo anime
 
     clear_console()
-    print(f"{bcolors.BOLD}{bcolors.OKBLUE}UEC Basic{bcolors.ENDC}{bcolors.ENDC}")
+    print(f"{bcolors.BOLD}{bcolors.OKBLUE}Like Basic{bcolors.ENDC}{bcolors.ENDC}")
     print("(c) 2024 Kajizuka Taichi. All rights reserved")
-    print("Created by student of UEC programming class")
     print("-" * 50)
 
     repl()  # Start the REPL
