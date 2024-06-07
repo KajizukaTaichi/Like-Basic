@@ -1,7 +1,9 @@
 # Like Basic
 The simple and user-friendly Basic interpreter.
 
-https://github.com/KajizukaTaichi/UEC-Basic/assets/122075081/6c551cdc-1586-4144-b4ba-882be778da18
+
+https://github.com/KajizukaTaichi/Like-Basic/assets/122075081/5a6624ed-12e3-414a-a479-22c87f3115a1
+
 
 
 # Example code
