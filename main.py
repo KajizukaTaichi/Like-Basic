@@ -16,6 +16,7 @@ class LikeBasic:
             "STR": str,
             "INT": int,
             "RAND": random.random,
+            "ROUND": round,
             "SIN": math.sin,
             "COS": math.cos,
             "TAN": math.tan,
@@ -45,8 +46,8 @@ class LikeBasic:
 
         while True:
             try:
+                index += 1
                 if is_success:
-                    index += 1
                     if index >= len(sequence):
                         return  # Exit if all lines are executed
                     self.pc = sequence[index]
