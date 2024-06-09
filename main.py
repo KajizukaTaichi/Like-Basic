@@ -12,9 +12,14 @@ class LikeBasic:
         self.code = {}  # Stores the parsed code with line numbers as keys
         # Stores variables and their values
         self.vars = {
-            "math": math, 
-            "datetime": datetime, 
-            "os": os
+            "INPUT": input,
+            "STR": str,
+            "INT": int,
+            "RAND": random.random,
+            "SIN": math.sin,
+            "COS": math.cos,
+            "TAN": math.tan,
+            "NOW": datetime.datetime.now
         }
         
     def parse(self, code: str):
@@ -27,110 +32,116 @@ class LikeBasic:
                 self.code[int(tokens[0].strip())] = " ".join(tokens[1:])
 
     def eval_expr(self, expr: str):
-        try:
-            # Evaluate expressions using the stored variables
-            return eval(expr, {}, self.vars)
-        except Exception as e:
-            raise SyntaxError(f"Invalid expression \"{expr}\"") from e
+        # Evaluate expressions using the stored variables
+        return eval(expr, {}, self.vars)
 
     def run(self, code: str):
         self.parse(code)  # Parse the input code
         sequence = sorted(self.code.keys())  # Sort line numbers
         index = -1 # Index of sequence line
         while_stack = []  # Stack to handle WHILE loops
+        on_error_goto = None # Goto number when happen error
+        is_success = True # Flag of success to run
 
         while True:
-            index += 1
-            if index >= len(sequence):
-                return  # Exit if all lines are executed
-            self.pc = sequence[index]
-            line = self.code[self.pc]
-
-        
-            # Standards outout
-            if line.upper().startswith("PRINT"):
-                to_print = line[len("PRINT"):].strip() # Print
-                print("".join(list(map(lambda x: str(self.eval_expr(x)), to_print.split(";")))), end="")
-
-            # Random value
-            elif line.upper().startswith("RAND"):
-                variable = line[len("RAND"):].strip()
-                self.vars[variable] = random.random()  # Generate a random number
-
-            # Input
-            elif line.upper().startswith("INPUT"):
-                variable = line[len("INPUT"):].strip()
-                self.vars[variable] = input()  # Read input from user
-
-            # Goto Statement
-            elif line.upper().startswith("GOTO"):
-                target = self.eval_expr(line[len("GOTO"):].strip())
-                if target in self.code:
-                    index = sequence.index(target) - 1
+            try:
+                if is_success:
+                    index += 1
+                    if index >= len(sequence):
+                        return  # Exit if all lines are executed
+                    self.pc = sequence[index]
                 else:
-                    raise ValueError(f"Line number {target} does not exist")
+                    is_success = True
+            
+                line = self.code[self.pc]
+            
+                # Standards outout
+                if line.startswith("PRINT"):
+                    to_print = line[len("PRINT"):].strip() # Print
+                    print("".join(list(map(lambda x: str(self.eval_expr(x)), to_print.split(";")))), end="")
 
-            # Define variable
-            elif line.upper().startswith("LET"):
-                var_assignment = line[len("LET"):].strip()
-                var_name, expr = var_assignment.split("=", 1)
-                var_name = var_name.strip()
-                self.vars[var_name] = self.eval_expr(expr.strip())  # Assign value to variable
-
-            # IF statement 
-            elif line.upper().startswith("IF"):
-                condition, _, rest = line[len("IF"):].partition("THEN")
-                if "ELSE" in rest: # Check it there ELSE section
-                    true, _, false = rest.partition("ELSE")
-                    if self.eval_expr(condition.strip()):
-                        target_line = int(self.eval_expr(true.strip()))
-                        if target_line in self.code:
-                            index = sequence.index(target_line) - 1
-                        else:
-                            raise ValueError(f"Line number {target_line} does not exist")
+                # Goto Statement
+                elif line.startswith("GOTO"):
+                    target = self.eval_expr(line[len("GOTO"):].strip())
+                    if target in self.code:
+                        index = sequence.index(target) - 1
                     else:
-                        target_line = int(self.eval_expr(false.strip()))
-                        if target_line in self.code:
-                            index = sequence.index(target_line) - 1
-                        else:
-                            raise ValueError(f"Line number {target_line} does not exist")
-                else:
-                    if self.eval_expr(condition.strip()):
-                        target_line = int(self.eval_expr(rest.strip()))
-                        if target_line in self.code:
-                            index = sequence.index(target_line) - 1
-                        else:
-                            raise ValueError(f"Line number {target_line} does not exist")
+                        raise ValueError(f"Line number {target} does not exist")
 
-            # WHILE statement
-            elif line.upper().startswith("WHILE"):
-                condition = line[len("WHILE"):].strip()
-                if self.eval_expr(condition):
-                    while_stack.append((self.pc, condition))  # Push to stack
-                else:
-                    while True:
-                        index += 1
-                        if index >= len(sequence):
-                            return
-                        self.pc = sequence[index]
-                        line = self.code[self.pc]
-                        if line.upper().startswith("LOOP"):
-                            break  # Exit WHILE loop
+                # Define variable
+                elif line.startswith("LET"):
+                    var_assignment = line[len("LET"):].strip()
+                    var_name, expr = var_assignment.split("=", 1)
+                    var_name = var_name.strip()
+                    self.vars[var_name] = self.eval_expr(expr.strip())  # Assign value to variable
 
-            # End of the loop
-            elif line.upper().startswith("LOOP"):
-                if while_stack:
-                    start_pc, condition = while_stack[-1]
+                # IF statement 
+                elif line.startswith("IF"):
+                    condition, _, rest = line[len("IF"):].partition("THEN")
+                    if "ELSE" in rest: # Check it there ELSE section
+                        true, _, false = rest.partition("ELSE")
+                        if self.eval_expr(condition.strip()):
+                            target_line = int(self.eval_expr(true.strip()))
+                            if target_line in self.code:
+                                index = sequence.index(target_line) - 1
+                            else:
+                                raise ValueError(f"Line number {target_line} does not exist")
+                        else:
+                            target_line = int(self.eval_expr(false.strip()))
+                            if target_line in self.code:
+                                index = sequence.index(target_line) - 1
+                            else:
+                                raise ValueError(f"Line number {target_line} does not exist")
+                    else:
+                        if self.eval_expr(condition.strip()):
+                            target_line = int(self.eval_expr(rest.strip()))
+                            if target_line in self.code:
+                                index = sequence.index(target_line) - 1
+                            else:
+                                raise ValueError(f"Line number {target_line} does not exist")
+
+                # WHILE statement
+                elif line.startswith("WHILE"):
+                    condition = line[len("WHILE"):].strip()
                     if self.eval_expr(condition):
-                        index = sequence.index(start_pc) - 1  # Loop back to WHILE
+                        while_stack.append((self.pc, condition))  # Push to stack
                     else:
-                        while_stack.pop()  # Pop from stack
+                        while True:
+                            index += 1
+                            if index >= len(sequence):
+                                return
+                            self.pc = sequence[index]
+                            line = self.code[self.pc]
+                            if line.startswith("LOOP"):
+                                break  # Exit WHILE loop
 
-            # Exit running
-            elif line.upper().startswith("EXIT"):
-                return  # Exit the interpreter
-            else:
-                raise SyntaxError(f"Unknown command \"{line}\"")
+                # End of the loop
+                elif line.startswith("LOOP"):
+                    if while_stack:
+                        start_pc, condition = while_stack[-1]
+                        if self.eval_expr(condition):
+                            index = sequence.index(start_pc) - 1  # Loop back to WHILE
+                        else:
+                            while_stack.pop()  # Pop from stack
+
+                # IF statement 
+                elif line.startswith("ON ERROR"):
+                    on_error_goto = int(self.eval_expr(line[len("ON ERROR"):].strip()))
+
+                # Exit running
+                elif line.startswith("EXIT"):
+                    return  # Exit the interpreter
+                else:
+                    raise SyntaxError(f"Unknown command \"{line}\"")
+
+            except Exception as e:
+                if isinstance(on_error_goto, int):
+                    self.pc = on_error_goto
+                    is_success = False
+                    continue
+                else:
+                    raise ValueError(e)
+                        
 
 class bcolors:
     # ANSI escape codes for terminal text colors and styles
@@ -199,7 +210,7 @@ def repl():
 
         if len(inputed.split(" ")) > 1 and inputed.split(" ")[0].isdigit():
             code.append(inputed)  # Add input to code
-        elif inputed.upper() == "RUN":
+        elif inputed == "RUN":
             try:
                 interpreter.run("\n".join(code))  # Run the accumulated code
             except Exception as e:
@@ -207,7 +218,7 @@ def repl():
             else:
                 print(f"{bcolors.OKGREEN}Okay{bcolors.ENDC}")
         
-        elif inputed.upper().startswith("DEL"):
+        elif inputed.startswith("DEL"):
             try:
                 line = int(inputed[len("DEL"):].strip())
                 code = [item for item in code if not (item.split(" ")[0] == str(line))]
@@ -216,16 +227,16 @@ def repl():
                 print("Invalid line number")
 
         # Clear the code
-        elif inputed.upper() == "CLEAR":
+        elif inputed == "CLEAR":
             code = []
             print("Code is cleared")
 
         # Show the code
-        elif inputed.upper() == "CODE":
+        elif inputed == "CODE":
             print("\n".join([f"{key} {value}" for key, value in sorted(interpreter.code.items())]))
 
         # Save at the file
-        elif inputed.upper() == "SAVE":
+        elif inputed == "SAVE":
             try:
                 with open(input("File name: "), "w", encoding="utf-8") as f:
                     f.write("\n".join(code))
@@ -234,7 +245,7 @@ def repl():
                 print("Fault save")
         
         # Load from script file
-        elif inputed.upper() == "LOAD":
+        elif inputed == "LOAD":
             try:
                 with open(input("File name: "), "r", encoding="utf-8") as f:
                     code = f.read().split("\n")
@@ -243,7 +254,7 @@ def repl():
                 print("Not found")
         
         # Exit REPL
-        elif inputed.upper() == "EXIT":
+        elif inputed == "EXIT":
             exit(0)
         elif inputed != "":
             try:
