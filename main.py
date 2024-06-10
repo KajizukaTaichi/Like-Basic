@@ -10,11 +10,14 @@ class LikeBasic:
     """Interpreter of Like Basic"""
     def __init__(self):
         self.code = {}  # Stores the parsed code with line numbers as keys
+        
         # Stores variables and their values
         self.vars = {
             "INPUT": input,
             "STR": str,
             "INT": int,
+            "FLOAT": float,
+            "LIST": list,
             "RAND": random.random,
             "ROUND": round,
             "SIN": math.sin,
