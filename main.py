@@ -132,6 +132,11 @@ class LikeBasic:
                 elif line.startswith("ON ERROR"):
                     on_error_goto = int(self.eval_expr(line[len("ON ERROR"):].strip()))
 
+                elif line == "SPQR":
+                    print("Senātus Populusque Rōmānus")
+                elif line == "CCCP":
+                    print("Союз Советских Социалистических Республик")
+
                 # Exit running
                 elif line.startswith("EXIT"):
                     return  # Exit the interpreter
